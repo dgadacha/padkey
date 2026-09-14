@@ -147,6 +147,15 @@ enum MouseSource: String, Codable {
         case .none: return "Desactive"
         }
     }
+
+    /// Version courte, pour les boutons d'un groupe segmente.
+    var shortLabel: String {
+        switch self {
+        case .rightStick: return "Droit"
+        case .leftStick: return "Gauche"
+        case .none: return "Aucun"
+        }
+    }
 }
 
 struct MouseConfig: Codable, Equatable {
@@ -166,6 +175,8 @@ struct MouseConfig: Codable, Equatable {
 struct Profile: Codable, Equatable {
     var name: String
     var notes: String?
+    /// Symbole affiche dans la liste des profils.
+    var icon: String?
     /// Poussee a partir de laquelle un stick compte comme une direction pressee.
     var stickDeadzone: Double = 0.45
     /// Enfoncement a partir duquel L2 / R2 comptent comme presses.
@@ -176,11 +187,14 @@ struct Profile: Codable, Equatable {
     var bindings: [PadInput: PadBinding] = [:]
 
     enum CodingKeys: String, CodingKey {
-        case name, notes, stickDeadzone, triggerThreshold, scrollInterval, mouse, bindings
+        case name, notes, icon, stickDeadzone, triggerThreshold, scrollInterval, mouse, bindings
     }
+
+    var symbol: String { icon ?? "gamecontroller" }
 
     init(name: String,
          notes: String? = nil,
+         icon: String? = nil,
          stickDeadzone: Double = 0.45,
          triggerThreshold: Double = 0.30,
          scrollInterval: Double = 0.07,
@@ -188,6 +202,7 @@ struct Profile: Codable, Equatable {
          bindings: [PadInput: PadBinding] = [:]) {
         self.name = name
         self.notes = notes
+        self.icon = icon
         self.stickDeadzone = stickDeadzone
         self.triggerThreshold = triggerThreshold
         self.scrollInterval = scrollInterval
@@ -199,6 +214,7 @@ struct Profile: Codable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = try container.decode(String.self, forKey: .name)
         notes = try container.decodeIfPresent(String.self, forKey: .notes)
+        icon = try container.decodeIfPresent(String.self, forKey: .icon)
         stickDeadzone = try container.decodeIfPresent(Double.self, forKey: .stickDeadzone) ?? 0.45
         triggerThreshold = try container.decodeIfPresent(Double.self, forKey: .triggerThreshold) ?? 0.30
         scrollInterval = try container.decodeIfPresent(Double.self, forKey: .scrollInterval) ?? 0.07
@@ -218,6 +234,7 @@ struct Profile: Codable, Equatable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
         try container.encodeIfPresent(notes, forKey: .notes)
+        try container.encodeIfPresent(icon, forKey: .icon)
         try container.encode(stickDeadzone, forKey: .stickDeadzone)
         try container.encode(triggerThreshold, forKey: .triggerThreshold)
         try container.encode(scrollInterval, forKey: .scrollInterval)

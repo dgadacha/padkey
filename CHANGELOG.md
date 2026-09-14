@@ -8,6 +8,26 @@ d'une meme version sans avoir a tenir un compteur.
 Numerotation semantique : le premier nombre change si l'usage change en profondeur,
 le deuxieme pour une nouveaute, le troisieme pour une correction.
 
+## 1.3.0
+
+Refonte complete de l'interface, sans toucher au moteur de mapping.
+
+- Structure en trois niveaux : colonne de navigation, manette au centre, panneaux
+  contextuels en bas. Le regard suit profil, manette, controle, mapping.
+- La DualSense occupe environ trois cinquiemes de la largeur et n'est plus noyee
+  sous les traits. Les etiquettes tiennent en deux segments, le controle puis ce
+  qu'il envoie, et seules les entrees assignees en portent une.
+- Survol synchronise entre la manette et les etiquettes, selection au clic, appui
+  physique visible sur le dessin comme dans la lecture en direct.
+- Panneau d'edition contextuel a la place de la longue liste : le controle
+  selectionne s'edite sur place, et un clic dans un champ capture la touche.
+- Les reglages sont ranges en Visee, Seuils et Avance plutot qu'affiches tous en
+  meme temps. Rien n'a ete retire.
+- Lecture en direct enrichie : sticks, gachettes analogiques, gachettes hautes,
+  boutons de facade et croix directionnelle.
+- Mode Liste retravaille, avec recherche.
+- Barre de statut, jetons de couleur unifies, theme sombre assume.
+
 ## 1.2.0
 
 - Repetition automatique, activable par correspondance. Sans elle, une touche reste

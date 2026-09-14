@@ -28,11 +28,11 @@ enum Snapshot {
             state.statusItemHidden = true
         }
 
-        let hosting = NSHostingController(rootView: SettingsView(state: state, initialMode: list ? .list : .board))
+        let hosting = NSHostingController(rootView: SettingsView(state: state, initialMode: list ? .list : .board, initialZone: demo ? "leftStick" : nil))
         let window = NSWindow(contentViewController: hosting)
         window.styleMask = [.titled, .closable, .resizable]
         window.title = "PadKey"
-        window.setContentSize(NSSize(width: 1280, height: 820))
+        window.setContentSize(NSSize(width: 1440, height: 900))
         window.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
         window.setFrameOrigin(NSPoint(x: -4000, y: 0))
         window.orderFront(nil)

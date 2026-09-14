@@ -10,6 +10,7 @@ enum DefaultProfiles {
     static let outlast = Profile(
         name: "Outlast",
         notes: "Stick gauche pour marcher, stick droit pour regarder. L2 sort le camescope, R2 interagit, PS maintenu une seconde coupe le mapping.",
+        icon: "gamecontroller",
         stickDeadzone: 0.40,
         triggerThreshold: 0.25,
         mouse: MouseConfig(source: .rightStick, speed: 1500, deadzone: 0.09, curve: 2.0, verticalScale: 0.75),
@@ -38,6 +39,7 @@ enum DefaultProfiles {
     static let fps = Profile(
         name: "FPS generique",
         notes: "Schema classique manette vers clavier et souris. A dupliquer et ajuster par jeu.",
+        icon: "scope",
         mouse: MouseConfig(source: .rightStick, speed: 1600, deadzone: 0.08, curve: 2.2, verticalScale: 0.8),
         bindings: [
             .leftStickUp: .key("W"),
@@ -68,6 +70,7 @@ enum DefaultProfiles {
     static let desktop = Profile(
         name: "Bureau",
         notes: "Le stick droit deplace le curseur, R2 clique. Pratique pour lancer un jeu sans se relever.",
+        icon: "house",
         mouse: MouseConfig(source: .rightStick, speed: 1100, deadzone: 0.12, curve: 2.6, verticalScale: 1.0),
         bindings: [
             .leftStickUp: .repeating("Up"),

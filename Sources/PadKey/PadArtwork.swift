@@ -35,9 +35,9 @@ enum PadArtwork {
     }
 
     /// Abscisse des rails, en fraction de la largeur du dessin.
-    static let leftRail: Double = 0.012
-    static let rightRail: Double = 0.988
-    static let chipWidth: CGFloat = 100
+    static let leftRail: Double = -0.035
+    static let rightRail: Double = 1.035
+    static let chipWidth: CGFloat = 150
 
     private static func r(_ x: Double, _ y: Double, _ w: Double, _ h: Double) -> CGRect {
         CGRect(x: x, y: y, width: w, height: h)
@@ -85,35 +85,58 @@ enum PadArtwork {
     ]
 
     static let chips: [Chip] = [
-        Chip(id: "l2", inputs: [.l2], zoneID: "l2", side: .left, y: 0.045),
-        Chip(id: "l1", inputs: [.l1], zoneID: "l1", side: .left, y: 0.155),
-        Chip(id: "create", inputs: [.create], zoneID: "create", side: .left, y: 0.275),
-        Chip(id: "dpadUp", inputs: [.dpadUp], zoneID: "dpadUp", side: .left, y: 0.390),
-        Chip(id: "dpadLeft", inputs: [.dpadLeft], zoneID: "dpadLeft", side: .left, y: 0.500),
-        Chip(id: "dpadRight", inputs: [.dpadRight], zoneID: "dpadRight", side: .left, y: 0.610),
+        Chip(id: "l2", inputs: [.l2], zoneID: "l2", side: .left, y: 0.050),
+        Chip(id: "l1", inputs: [.l1], zoneID: "l1", side: .left, y: 0.165),
+        Chip(id: "create", inputs: [.create], zoneID: "create", side: .left, y: 0.285),
+        Chip(id: "dpadUp", inputs: [.dpadUp], zoneID: "dpadUp", side: .left, y: 0.405),
+        Chip(id: "dpadLeft", inputs: [.dpadLeft], zoneID: "dpadLeft", side: .left, y: 0.510),
+        Chip(id: "dpadRight", inputs: [.dpadRight], zoneID: "dpadRight", side: .left, y: 0.615),
         Chip(id: "dpadDown", inputs: [.dpadDown], zoneID: "dpadDown", side: .left, y: 0.720),
-        Chip(id: "l3", inputs: [.l3], zoneID: "leftStick", side: .left, y: 0.830),
-        Chip(id: "leftStickDirs",
-             inputs: [.leftStickUp, .leftStickLeft, .leftStickDown, .leftStickRight],
-             zoneID: "leftStick", side: .left, y: 0.945, grouped: true),
+        Chip(id: "leftStick",
+             inputs: [.leftStickUp, .leftStickLeft, .leftStickDown, .leftStickRight, .l3],
+             zoneID: "leftStick", side: .left, y: 0.880, grouped: true),
 
-        Chip(id: "r2", inputs: [.r2], zoneID: "r2", side: .right, y: 0.045),
-        Chip(id: "r1", inputs: [.r1], zoneID: "r1", side: .right, y: 0.155),
-        Chip(id: "options", inputs: [.options], zoneID: "options", side: .right, y: 0.275),
-        Chip(id: "touchpad", inputs: [.touchpad], zoneID: "touchpad", side: .right, y: 0.385),
-        Chip(id: "triangle", inputs: [.triangle], zoneID: "triangle", side: .right, y: 0.487),
-        Chip(id: "circle", inputs: [.circle], zoneID: "circle", side: .right, y: 0.575),
-        Chip(id: "cross", inputs: [.cross], zoneID: "cross", side: .right, y: 0.663),
-        Chip(id: "square", inputs: [.square], zoneID: "square", side: .right, y: 0.751),
-        Chip(id: "r3", inputs: [.r3], zoneID: "rightStick", side: .right, y: 0.845),
-        Chip(id: "rightStickDirs",
-             inputs: [.rightStickUp, .rightStickLeft, .rightStickDown, .rightStickRight],
-             zoneID: "rightStick", side: .right, y: 0.945, grouped: true),
+        Chip(id: "r2", inputs: [.r2], zoneID: "r2", side: .right, y: 0.050),
+        Chip(id: "r1", inputs: [.r1], zoneID: "r1", side: .right, y: 0.165),
+        Chip(id: "options", inputs: [.options], zoneID: "options", side: .right, y: 0.285),
+        Chip(id: "touchpad", inputs: [.touchpad], zoneID: "touchpad", side: .right, y: 0.390),
+        Chip(id: "triangle", inputs: [.triangle], zoneID: "triangle", side: .right, y: 0.495),
+        Chip(id: "square", inputs: [.square], zoneID: "square", side: .right, y: 0.585),
+        Chip(id: "circle", inputs: [.circle], zoneID: "circle", side: .right, y: 0.675),
+        Chip(id: "cross", inputs: [.cross], zoneID: "cross", side: .right, y: 0.765),
+        Chip(id: "rightStick",
+             inputs: [.rightStickUp, .rightStickLeft, .rightStickDown, .rightStickRight, .r3],
+             zoneID: "rightStick", side: .right, y: 0.880, grouped: true),
 
-        Chip(id: "ps", inputs: [.ps], zoneID: "ps", side: .center, y: 1.012),
+        Chip(id: "ps", inputs: [.ps], zoneID: "ps", side: .center, y: 1.010),
     ]
 
     static func zone(id: String) -> Zone? { zones.first { $0.id == id } }
+
+    /// Etiquette courte du controle, celle imprimee sur la manette.
+    static func badge(for zoneID: String) -> String {
+        switch zoneID {
+        case "l1": return "L1"
+        case "l2": return "L2"
+        case "r1": return "R1"
+        case "r2": return "R2"
+        case "triangle": return "\u{25B3}"
+        case "circle": return "\u{25CB}"
+        case "cross": return "\u{2715}"
+        case "square": return "\u{25A1}"
+        case "dpadUp": return "\u{2191}"
+        case "dpadDown": return "\u{2193}"
+        case "dpadLeft": return "\u{2190}"
+        case "dpadRight": return "\u{2192}"
+        case "create": return "Create"
+        case "options": return "Options"
+        case "touchpad": return "Pave"
+        case "ps": return "PS"
+        case "leftStick": return "Stick G"
+        case "rightStick": return "Stick D"
+        default: return ""
+        }
+    }
 
     static func zone(for input: PadInput) -> Zone? { zones.first { $0.inputs.contains(input) } }
 

@@ -267,8 +267,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let hosting = NSHostingController(rootView: SettingsView(state: state))
             let window = NSWindow(contentViewController: hosting)
             window.title = "PadKey"
+            window.appearance = NSAppearance(named: .darkAqua)
+            window.titlebarAppearsTransparent = true
+            window.backgroundColor = NSColor(red: 0.067, green: 0.071, blue: 0.102, alpha: 1)
             window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
-            window.setContentSize(NSSize(width: 1280, height: 820))
+            window.setContentSize(NSSize(width: 1440, height: 900))
             // Avec plusieurs ecrans, center() choisit au hasard : on vise celui
             // ou se trouve le curseur.
             let pointer = NSEvent.mouseLocation

@@ -138,6 +138,31 @@ final class AppState: ObservableObject {
 
     func quitSteam() { SteamWatch.quit() }
 
+    /// Steam Input, et non Steam lui-meme, est ce qui rend la manette muette.
+    func showSteamHelp() {
+        let alert = NSAlert()
+        alert.messageText = "Steam est ouvert"
+        alert.informativeText = Self.steamHelpText
+        alert.addButton(withTitle: "Compris")
+        alert.addButton(withTitle: "Quitter Steam")
+        if alert.runModal() == .alertSecondButtonReturn { quitSteam() }
+    }
+
+    private static let steamHelpText = """
+        Quand Steam Input est actif, Steam prend la main sur la DualSense et la \
+        remplace par une manette virtuelle. PadKey ne recoit alors plus rien \
+        d'utilisable.
+
+        Pour un jeu Steam, ne fermez pas Steam : desactivez seulement Steam Input \
+        pour ce jeu, depuis la Bibliotheque, clic droit sur le jeu, Proprietes, \
+        Manette. Pour le couper partout : Steam, Reglages, Manette.
+
+        Pour un jeu hors Steam, fermer Steam regle la question.
+
+        Verification : bougez les sticks et regardez la lecture en direct. Si elle \
+        reagit, la manette est bien lue.
+        """
+
     /// La barre de menus deborde : expliquer comment retrouver l'application.
     func showMenuBarHelp() {
         let alert = NSAlert()
