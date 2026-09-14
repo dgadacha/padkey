@@ -32,9 +32,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             self, selector: #selector(displaysChanged),
             name: NSApplication.didChangeScreenParametersNotification, object: nil)
 
+        // Une application sans icone dans le Dock n'a que son icone de barre de
+        // menus pour se manifester, et macOS la masque quand la barre est pleine.
+        // On ouvre donc la fenetre a chaque lancement : sinon, double-cliquer
+        // l'application ne produit rien de visible et elle parait cassee.
+        showSettings(nil)
         if !state.hasAccessibility {
-            showSettings(nil)
             promptForAccessibility()
+        }
+        warnIfStatusItemHidden()
+    }
+
+    /// Relancer une application deja ouverte passe par ici : c'est ce qui arrive
+    /// quand on double-clique son icone dans le Finder.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        showSettings(nil)
+        return true
+    }
+
+    /// Quand la barre de menus deborde, l'element existe mais n'est jamais dessine.
+    /// Le dire vaut mieux que laisser chercher.
+    private func warnIfStatusItemHidden() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self, let button = self.statusItem.button else { return }
+            let frame = button.window?.frame ?? .zero
+            let visible = frame.width > 0 && NSScreen.screens.contains { $0.frame.intersects(frame) }
+            guard !visible else { return }
+            self.state.statusItemHidden = true
         }
     }
 

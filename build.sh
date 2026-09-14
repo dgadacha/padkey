@@ -28,6 +28,16 @@ cp Resources/dualsense-*.png "$APP/Contents/Resources/"
 cp Resources/CREDITS.md Resources/GamepadAssetPack-LICENSE.txt "$APP/Contents/Resources/"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/"
 
+# macOS 26 encadre les icones fournies uniquement en .icns. Compiler le catalogue
+# d'assets et declarer CFBundleIconName fait traiter l'icone comme une icone
+# moderne, affichee telle quelle.
+xcrun actool Resources/Assets.xcassets \
+    --compile "$APP/Contents/Resources" \
+    --platform macosx --minimum-deployment-target 14.0 \
+    --app-icon AppIcon \
+    --output-partial-info-plist /dev/null >/dev/null 2>&1 || \
+    echo "    (catalogue d'icones ignore : actool indisponible)"
+
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -42,6 +52,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>CFBundleVersion</key><string>$BUILD</string>
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>CFBundleIconFile</key><string>AppIcon</string>
+    <key>CFBundleIconName</key><string>AppIcon</string>
     <key>LSUIElement</key><true/>
     <key>NSHumanReadableCopyright</key><string>PadKey</string>
 </dict>

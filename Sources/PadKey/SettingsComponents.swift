@@ -34,6 +34,12 @@ struct HeaderBar: View {
 
             Spacer()
 
+            if state.statusItemHidden {
+                AlertChip(icon: "menubar.arrow.up.rectangle",
+                          text: "Icone masquee, barre de menus pleine",
+                          tint: Theme.warning,
+                          action: "Details") { state.showMenuBarHelp() }
+            }
             if state.steamRunning {
                 SteamChip(state: state)
             }

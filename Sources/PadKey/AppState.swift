@@ -19,6 +19,8 @@ final class AppState: ObservableObject {
     /// Steam Input capture la manette et la remplace par un peripherique virtuel :
     /// PadKey ne recoit alors plus rien d'utilisable.
     @Published var steamRunning: Bool = false
+    /// Vrai quand la barre de menus est trop chargee pour afficher notre icone.
+    @Published var statusItemHidden: Bool = false
     /// Manettes visibles par macOS, pour laisser choisir quand il y en a plusieurs.
     @Published var availableControllers: [ControllerInfo] = []
     @Published var preferredController: String? = nil
@@ -122,6 +124,27 @@ final class AppState: ObservableObject {
     }
 
     func quitSteam() { SteamWatch.quit() }
+
+    /// La barre de menus deborde : expliquer comment retrouver l'application.
+    func showMenuBarHelp() {
+        let alert = NSAlert()
+        alert.messageText = "L'icone de PadKey ne tient pas dans la barre de menus"
+        alert.informativeText = Self.menuBarHelpText
+        alert.addButton(withTitle: "Compris")
+        alert.runModal()
+    }
+
+    private static let menuBarHelpText = """
+        Votre barre de menus est pleine, macOS a donc masque l'icone de PadKey. \
+        L'application tourne quand meme et le mapping fonctionne.
+
+        Pour retrouver cette fenetre a tout moment, double-cliquez PadKey dans le \
+        dossier Applications : elle se rouvre meme si l'application tourne deja.
+
+        Pour faire de la place, maintenez la touche Commande et faites glisser les \
+        icones de la barre pour les reordonner ou les sortir, ou masquez-en depuis \
+        Reglages Systeme, Barre des menus.
+        """
 
     func choose(controller id: String?) {
         preferredController = id

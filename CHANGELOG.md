@@ -8,6 +8,17 @@ d'une meme version sans avoir a tenir un compteur.
 Numerotation semantique : le premier nombre change si l'usage change en profondeur,
 le deuxieme pour une nouveaute, le troisieme pour une correction.
 
+## 1.1.1
+
+- Double-cliquer l'application ne produisait rien de visible : sans icone dans le
+  Dock, et avec une barre de menus pleine ou macOS masque l'icone, PadKey devenait
+  injoignable alors qu'il tournait. La fenetre s'ouvre desormais a chaque lancement,
+  et relancer l'application la rouvre.
+- Avertissement dans la fenetre quand l'icone de barre de menus ne tient pas, avec
+  la marche a suivre pour faire de la place.
+- Icone : macOS 26 encadrait de gris les icones fournies en seul .icns. Elle passe
+  maintenant par un catalogue d'assets compile et remplit toute la forme.
+
 ## 1.1.0
 
 - Interface repensee autour d'une illustration de DualSense : chaque controle est

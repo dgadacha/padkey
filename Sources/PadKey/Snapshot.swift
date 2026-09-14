@@ -25,6 +25,7 @@ enum Snapshot {
             fake.leftTrigger = 0.85
             fake.rightTrigger = 0.12
             state.liveSnapshot = fake
+            state.statusItemHidden = true
         }
 
         let hosting = NSHostingController(rootView: SettingsView(state: state, initialMode: list ? .list : .board))
