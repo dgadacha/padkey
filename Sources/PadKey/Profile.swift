@@ -85,6 +85,9 @@ struct PadBinding: Codable, Equatable {
     var keycodes: [Int]?
     var mouse: MouseButtonKind?
     var scroll: ScrollDirection?
+    /// Repete la touche tant que l'entree est maintenue, comme le fait un clavier.
+    /// Inutile pour se deplacer dans un jeu, precieux pour naviguer dans un menu.
+    var autoRepeat: Bool?
 
     var isEmpty: Bool {
         (keys?.isEmpty ?? true) && (chars?.isEmpty ?? true) && (keycodes?.isEmpty ?? true)
@@ -93,6 +96,7 @@ struct PadBinding: Codable, Equatable {
 
     static func key(_ names: String...) -> PadBinding { PadBinding(keys: names) }
     static func click(_ button: MouseButtonKind) -> PadBinding { PadBinding(mouse: button) }
+    static func repeating(_ names: String...) -> PadBinding { PadBinding(keys: names, autoRepeat: true) }
     static func wheel(_ direction: ScrollDirection) -> PadBinding { PadBinding(scroll: direction) }
 
     /// Traduit le binding en codes concrets, en tenant compte de la disposition clavier
@@ -108,7 +112,8 @@ struct PadBinding: Codable, Equatable {
         for raw in keycodes ?? [] where raw >= 0 && raw <= 127 {
             codes.append(CGKeyCode(raw))
         }
-        return ResolvedBinding(keyCodes: codes, mouse: mouse, scroll: scroll)
+        return ResolvedBinding(keyCodes: codes, mouse: mouse, scroll: scroll,
+                               autoRepeat: autoRepeat ?? false)
     }
 
     /// Libelle lisible, du genre "Maj + W" ou "Clic gauche".
@@ -119,7 +124,9 @@ struct PadBinding: Codable, Equatable {
         parts.append(contentsOf: (keycodes ?? []).map { KeyCodes.label(for: CGKeyCode($0)) })
         if let mouse { parts.append(mouse.label) }
         if let scroll { parts.append(scroll.label) }
-        return parts.isEmpty ? "Aucune" : parts.joined(separator: " + ")
+        if parts.isEmpty { return "Aucune" }
+        let text = parts.joined(separator: " + ")
+        return autoRepeat == true ? text + " ⟳" : text
     }
 }
 
@@ -127,6 +134,7 @@ struct ResolvedBinding {
     var keyCodes: [CGKeyCode]
     var mouse: MouseButtonKind?
     var scroll: ScrollDirection?
+    var autoRepeat: Bool = false
 }
 
 enum MouseSource: String, Codable {

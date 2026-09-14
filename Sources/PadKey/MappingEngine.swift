@@ -39,6 +39,8 @@ final class MappingEngine {
     private var heldKeys: [CGKeyCode: Int] = [:]
     private var heldMouse: [MouseButtonKind: Int] = [:]
     private var scrollAccumulator: [PadInput: Double] = [:]
+    /// Temps ecoule depuis l'appui, pour les entrees qui se repetent.
+    private var repeatClock: [PadInput: Double] = [:]
     private var mouseRemainder = CGPoint.zero
     private var psHeldSince: Date?
     private var lastTick = Date()
@@ -289,6 +291,7 @@ final class MappingEngine {
         previousInputs = active
 
         repeatScrolls(active: active, dt: dt)
+        repeatKeys(active: active, dt: dt)
         moveMouse(pad: pad, dt: dt)
     }
 
@@ -326,6 +329,7 @@ final class MappingEngine {
             synth.scroll(scroll)
             scrollAccumulator[input] = 0
         }
+        if action.autoRepeat { repeatClock[input] = 0 }
     }
 
     private func release(_ input: PadInput) {
@@ -350,6 +354,32 @@ final class MappingEngine {
             }
         }
         scrollAccumulator[input] = nil
+        repeatClock[input] = nil
+    }
+
+    /// Reproduit l'auto-repetition d'un clavier : un temps mort, puis une cadence
+    /// reguliere tant que l'entree reste maintenue.
+    private static let repeatDelay = 0.40
+    private static let repeatInterval = 0.045
+
+    private func repeatKeys(active: Set<PadInput>, dt: Double) {
+        for input in active {
+            guard let action = resolved[input], action.autoRepeat, !action.keyCodes.isEmpty,
+                  var elapsed = repeatClock[input] else { continue }
+            let before = elapsed
+            elapsed += dt
+            repeatClock[input] = elapsed
+            guard elapsed >= MappingEngine.repeatDelay else { continue }
+
+            // Nombre de crans franchis depuis le tick precedent, pour rester
+            // regulier meme si la boucle prend du retard.
+            let ticksBefore = max(0, Int((before - MappingEngine.repeatDelay) / MappingEngine.repeatInterval) + (before >= MappingEngine.repeatDelay ? 1 : 0))
+            let ticksNow = Int((elapsed - MappingEngine.repeatDelay) / MappingEngine.repeatInterval) + 1
+            guard ticksNow > ticksBefore else { continue }
+            if let code = action.keyCodes.last {
+                for _ in 0..<(ticksNow - ticksBefore) { synth.keyRepeat(code) }
+            }
+        }
     }
 
     private func repeatScrolls(active: Set<PadInput>, dt: Double) {
@@ -403,6 +433,7 @@ final class MappingEngine {
         heldKeys.removeAll()
         heldMouse.removeAll()
         scrollAccumulator.removeAll()
+        repeatClock.removeAll()
         mouseRemainder = .zero
     }
 }

@@ -208,6 +208,8 @@ struct SettingsView: View {
                     Divider()
                     Button("Ouvrir le dossier") { state.revealProfilesFolder() }
                     Button("Recharger depuis les fichiers") { state.reload() }
+                    Divider()
+                    Button("Restaurer les profils livres") { state.restoreDefaults() }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }

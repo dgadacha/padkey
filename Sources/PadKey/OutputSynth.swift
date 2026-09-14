@@ -50,6 +50,17 @@ final class OutputSynth {
         event.post(tap: .cghidEventTap)
     }
 
+    /// Frappe supplementaire pendant que la touche reste enfoncee, marquee comme
+    /// repetition automatique, exactement comme le fait un clavier physique.
+    func keyRepeat(_ code: CGKeyCode) {
+        guard !KeyCodes.modifierCodes.contains(code),
+              let event = CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: true)
+        else { return }
+        event.setIntegerValueField(.keyboardEventAutorepeat, value: 1)
+        event.flags = activeFlags
+        event.post(tap: .cghidEventTap)
+    }
+
     /// Un modificateur maintenu ne se simule pas avec keyDown : le systeme attend
     /// un evenement flagsChanged portant l'etat complet des modificateurs.
     private func postFlagsChanged(_ code: CGKeyCode) {

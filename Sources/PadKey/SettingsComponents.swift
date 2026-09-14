@@ -202,6 +202,15 @@ struct BindingRow: View {
                     Button("Molette haut") { onApply(.wheel(.up)) }
                     Button("Molette bas") { onApply(.wheel(.down)) }
                     Divider()
+                    Toggle("Repetition automatique", isOn: Binding(
+                        get: { binding?.autoRepeat == true },
+                        set: { value in
+                            guard var updated = binding else { return }
+                            updated.autoRepeat = value ? true : nil
+                            onApply(updated)
+                        }))
+                        .disabled(binding == nil || binding?.keys == nil && binding?.keycodes == nil && binding?.chars == nil)
+                    Divider()
                     Button("Effacer") { onApply(nil) }
                 } label: {
                     Image(systemName: "ellipsis.circle")

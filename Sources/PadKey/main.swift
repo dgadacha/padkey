@@ -13,6 +13,10 @@ func launch() {
                          list: args.contains("--list"))
         exit(0)
     }
+    if CommandLine.arguments.contains("--test-touche") {
+        Diagnostic.testKeyHold()
+        exit(0)
+    }
     if CommandLine.arguments.contains("--test-souris") {
         Diagnostic.testMouseInjection()
         exit(0)

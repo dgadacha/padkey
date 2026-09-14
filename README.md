@@ -12,7 +12,7 @@ Depuis l'image disque :
 
 ```bash
 ./package.sh
-open dist/PadKey-1.1.0.dmg
+open dist/PadKey-1.2.0.dmg
 ```
 
 Glissez PadKey sur le dossier Applications, puis lancez-le.
@@ -146,6 +146,15 @@ Une entree peut declencher :
 - `"mouse": "left" | "right" | "middle"` : un bouton de souris.
 - `"scroll": "up" | "down" | "left" | "right"` : la molette, repetee tant que
   l'entree est maintenue.
+- `"autoRepeat": true` : repete la touche tant que l'entree est maintenue, apres un
+  court delai, comme le fait un clavier.
+
+Sans `autoRepeat`, une touche reste simplement **enfoncee** tant que l'entree est
+maintenue. C'est ce qu'attend un jeu : le personnage avance sans s'arreter. Dans un
+editeur de texte, un seul caractere s'affiche, parce que l'auto-repetition du
+systeme ne s'applique qu'aux vraies frappes clavier ; ce n'est pas un defaut.
+Activez `autoRepeat` pour naviguer dans un menu, ou pour verifier le mapping dans
+un editeur de texte.
 
 Le stick qui pilote la souris ignore ses propres directions, pour eviter d'envoyer
 des touches en meme temps que le mouvement.
@@ -167,6 +176,15 @@ des touches en meme temps que le mouvement.
 Liste les manettes vues par macOS et affiche en direct les sticks, les gachettes et
 les boutons. Utile pour verifier le materiel sans passer par l'autorisation
 Accessibilite.
+
+```bash
+/Applications/PadKey.app/Contents/MacOS/PadKey --test-touche
+/Applications/PadKey.app/Contents/MacOS/PadKey --test-souris
+```
+
+Verifient respectivement qu'une touche envoyee reste enfoncee puis se relache, et
+que les mouvements de souris sortent. Le test clavier passe par F13, donc il n'ecrit
+nulle part.
 
 ## Harnais de developpement
 

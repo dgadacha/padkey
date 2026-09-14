@@ -8,6 +8,18 @@ d'une meme version sans avoir a tenir un compteur.
 Numerotation semantique : le premier nombre change si l'usage change en profondeur,
 le deuxieme pour une nouveaute, le troisieme pour une correction.
 
+## 1.2.0
+
+- Repetition automatique, activable par correspondance. Sans elle, une touche reste
+  simplement enfoncee tant que l'entree est maintenue : c'est ce qu'attend un jeu
+  pour un deplacement, mais pas pour naviguer dans un menu, ou l'on veut que la
+  touche se repete. Delai de 0,4 s puis une frappe toutes les 45 ms, comme un clavier.
+- Le profil Bureau s'en sert pour les fleches, la navigation devenait penible sans.
+- « Restaurer les profils livres » dans le menu des profils, pour recuperer les
+  profils d'origine apres une mise a jour.
+- Nouveau mode console `--test-touche` : verifie qu'une touche reste bien enfoncee
+  et que les repetitions sortent.
+
 ## 1.1.2
 
 - PadKey apparait desormais dans le Dock et dans Commande+Tab. L'application vivait

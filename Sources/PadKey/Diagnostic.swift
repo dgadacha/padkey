@@ -89,6 +89,90 @@ enum Diagnostic {
         print("Fin du diagnostic.")
     }
 
+    /// Verifie qu'une touche envoyee par PadKey reste bien enfoncee tant que
+    /// l'entree est maintenue. Dans un editeur de texte, un seul caractere
+    /// s'affiche parce que l'auto-repetition du systeme ne s'applique qu'aux vraies
+    /// frappes ; les jeux, eux, lisent l'etat de la touche, pas les repetitions.
+    static func testKeyHold() {
+        guard Permissions.hasAccessibility else {
+            print("Accessibilite MANQUANTE : aucun evenement ne peut sortir.")
+            return
+        }
+
+        // F13 n'ecrit rien et n'est mappee nulle part : le test ne laisse aucune
+        // trace dans l'application au premier plan.
+        let code: CGKeyCode = 105
+        let synth = OutputSynth()
+
+        func state() -> String {
+            CGEventSource.keyState(.hidSystemState, key: code) ? "ENFONCEE" : "relachee"
+        }
+
+        print("Test du maintien de touche, sur F13 pour n'ecrire nulle part.")
+        print("avant        : \(state())")
+        synth.keyDown(code)
+        for step in 1...6 {
+            usleep(250_000)
+            print(String(format: "apres %.1f s : %@", Double(step) * 0.25, state()))
+        }
+        synth.keyUp(code)
+        usleep(150_000)
+        print("apres relache: \(state())")
+        print("")
+
+        measureRepeats(code: code, synth: synth)
+        if CGEventSource.keyState(.hidSystemState, key: code) {
+            print("La touche est restee enfoncee apres le relachement : c'est un bug.")
+        } else {
+            print("Conclusion : la touche reste enfoncee tout le temps voulu, puis se")
+            print("relache. C'est exactement ce qu'un jeu attend pour un deplacement.")
+        }
+    }
+
+    private nonisolated(unsafe) static var tapCount = 0
+    private nonisolated(unsafe) static var tapKey: CGKeyCode = 0
+
+    /// Ecoute reellement le flux d'evenements pour compter ce qui en sort.
+    /// Le compteur systeme ignore les repetitions, il ne prouve donc rien ici.
+    private static func measureRepeats(code: CGKeyCode, synth: OutputSynth) {
+        tapCount = 0
+        tapKey = code
+        let mask = (1 << CGEventType.keyDown.rawValue)
+        guard let tap = CGEvent.tapCreate(tap: .cgSessionEventTap,
+                                          place: .headInsertEventTap,
+                                          options: .listenOnly,
+                                          eventsOfInterest: CGEventMask(mask),
+                                          callback: { _, _, event, _ in
+                                              let key = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
+                                              if key == Diagnostic.tapKey { Diagnostic.tapCount += 1 }
+                                              return Unmanaged.passUnretained(event)
+                                          },
+                                          userInfo: nil) else {
+            print("Ecoute des evenements impossible.")
+            return
+        }
+        let loop = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
+        CFRunLoopAddSource(CFRunLoopGetCurrent(), loop, .commonModes)
+        CGEvent.tapEnable(tap: tap, enable: true)
+
+        synth.keyDown(code)
+        for _ in 0..<10 {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.045))
+            synth.keyRepeat(code)
+        }
+        RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+        synth.keyUp(code)
+        RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+
+        CGEvent.tapEnable(tap: tap, enable: false)
+        CFRunLoopRemoveSource(CFRunLoopGetCurrent(), loop, .commonModes)
+
+        print("Repetition : \(tapCount) frappes vues pour 1 appui et 10 repetitions.")
+        print(tapCount >= 11 ? "Les repetitions sortent correctement."
+                             : "Les repetitions n'atteignent pas le systeme.")
+        print("")
+    }
+
     /// Verifie que les evenements de synthese sortent vraiment : deplace le curseur,
     /// mesure le resultat, puis le remet ou il etait.
     static func testMouseInjection() {
