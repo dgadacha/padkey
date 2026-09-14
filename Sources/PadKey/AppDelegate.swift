@@ -11,8 +11,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var cancellables: Set<AnyCancellable> = []
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.accessory)
         state = AppState()
+        buildMainMenu()
+        state.onDockPreferenceChange = { [weak self] in self?.applyActivationPolicy() }
+        applyActivationPolicy()
 
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         statusItem.menu = buildMenu()
@@ -64,6 +66,58 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         state.setEnabled(false)
+    }
+
+    /// Presente dans le Dock, ou discrete en barre de menus seulement.
+    /// Une application d'arriere-plan sans icone de Dock devient introuvable quand
+    /// la barre de menus est pleine : le Dock sert alors de porte d'entree.
+    func applyActivationPolicy() {
+        NSApp.setActivationPolicy(state.showInDock ? .regular : .accessory)
+        if state.showInDock {
+            NSApp.activate(ignoringOtherApps: true)
+        }
+    }
+
+    /// En mode Dock, l'application a une barre de menus applicative : sans ce menu
+    /// elle serait vide et Commande+Q ne repondrait pas.
+    private func buildMainMenu() {
+        let main = NSMenu()
+
+        let appItem = NSMenuItem()
+        let appMenu = NSMenu()
+        appMenu.addItem(withTitle: "A propos de PadKey", action: #selector(showAbout), keyEquivalent: "")
+            .target = self
+        appMenu.addItem(.separator())
+        appMenu.addItem(withTitle: "Reglages", action: #selector(showSettings(_:)), keyEquivalent: ",")
+            .target = self
+        appMenu.addItem(.separator())
+        appMenu.addItem(withTitle: "Masquer PadKey", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        let hideOthers = appMenu.addItem(withTitle: "Masquer les autres",
+                                         action: #selector(NSApplication.hideOtherApplications(_:)),
+                                         keyEquivalent: "h")
+        hideOthers.keyEquivalentModifierMask = [.command, .option]
+        appMenu.addItem(.separator())
+        appMenu.addItem(withTitle: "Quitter PadKey", action: #selector(quit), keyEquivalent: "q")
+            .target = self
+        appItem.submenu = appMenu
+        main.addItem(appItem)
+
+        let windowItem = NSMenuItem()
+        let windowMenu = NSMenu(title: "Fenetre")
+        windowMenu.addItem(withTitle: "Reduire", action: #selector(NSWindow.miniaturize(_:)), keyEquivalent: "m")
+        windowMenu.addItem(withTitle: "Fermer", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        windowItem.submenu = windowMenu
+        main.addItem(windowItem)
+
+        NSApp.mainMenu = main
+        NSApp.windowsMenu = windowMenu
+    }
+
+    @objc private func showAbout() {
+        NSApp.orderFrontStandardAboutPanel(options: [
+            .applicationVersion: AppInfo.version,
+            .version: AppInfo.build,
+        ])
     }
 
     @objc private func displaysChanged() {
@@ -158,6 +212,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         settings.target = self
         menu.addItem(settings)
 
+        let dock = NSMenuItem(title: "Afficher dans le Dock", action: #selector(toggleDock), keyEquivalent: "")
+        dock.target = self
+        dock.state = state.showInDock ? .on : .off
+        menu.addItem(dock)
+
         let folder = NSMenuItem(title: "Ouvrir le dossier des profils", action: #selector(openFolder), keyEquivalent: "")
         folder.target = self
         menu.addItem(folder)
@@ -189,6 +248,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         guard let name = sender.representedObject as? String else { return }
         state.select(profileNamed: name)
     }
+
+    @objc private func toggleDock() { state.showInDock.toggle() }
 
     @objc private func openFolder() { state.revealProfilesFolder() }
 

@@ -8,6 +8,16 @@ d'une meme version sans avoir a tenir un compteur.
 Numerotation semantique : le premier nombre change si l'usage change en profondeur,
 le deuxieme pour une nouveaute, le troisieme pour une correction.
 
+## 1.1.2
+
+- PadKey apparait desormais dans le Dock et dans Commande+Tab. L'application vivait
+  uniquement dans la barre de menus, ce qui la rendait introuvable quand son icone
+  y etait masquee.
+- Reglage « Afficher dans le Dock », dans la colonne de gauche et dans le menu de la
+  barre, pour revenir au mode discret d'origine.
+- Vraie barre de menus applicative en mode Dock : A propos, Reglages, Masquer,
+  Quitter, et le menu Fenetre.
+
 ## 1.1.1
 
 - Double-cliquer l'application ne produisait rien de visible : sans icone dans le

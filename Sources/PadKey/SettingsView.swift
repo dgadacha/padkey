@@ -131,9 +131,27 @@ struct SettingsView: View {
                 controllerSection
                 aimSection
                 thresholdSection
+                appSection
                 credits
             }
             .padding(16)
+        }
+    }
+
+    private var appSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Theme.sectionTitle("Application")
+            Toggle("Afficher dans le Dock", isOn: Binding(
+                get: { state.showInDock },
+                set: { state.showInDock = $0 }))
+                .font(.system(size: 11))
+                .controlSize(.small)
+            Text(state.showInDock
+                 ? "PadKey apparait dans le Dock et dans Commande+Tab."
+                 : "PadKey vit seulement dans la barre de menus. Si son icone y est masquee, rouvrez cette fenetre en double-cliquant l'application.")
+                .font(.system(size: 10))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 

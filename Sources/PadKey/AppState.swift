@@ -21,6 +21,16 @@ final class AppState: ObservableObject {
     @Published var steamRunning: Bool = false
     /// Vrai quand la barre de menus est trop chargee pour afficher notre icone.
     @Published var statusItemHidden: Bool = false
+    /// Presence dans le Dock, avec Commande+Tab, plutot qu'en arriere-plan seul.
+    @Published var showInDock: Bool = true {
+        didSet {
+            guard showInDock != oldValue else { return }
+            UserDefaults.standard.set(showInDock, forKey: "showInDock")
+            onDockPreferenceChange?()
+        }
+    }
+    /// Appele quand la presence dans le Dock change, pour appliquer la bascule.
+    var onDockPreferenceChange: (() -> Void)?
     /// Manettes visibles par macOS, pour laisser choisir quand il y en a plusieurs.
     @Published var availableControllers: [ControllerInfo] = []
     @Published var preferredController: String? = nil
@@ -54,6 +64,9 @@ final class AppState: ObservableObject {
         engine.onEnabledChange = { [weak self] value in self?.isEnabled = value }
         engine.start()
 
+        // Presente dans le Dock par defaut : c'est la seule porte d'entree fiable
+        // quand la barre de menus deborde.
+        showInDock = UserDefaults.standard.object(forKey: "showInDock") as? Bool ?? true
         hasAccessibility = Permissions.hasAccessibility
         hasInputMonitoring = Permissions.inputMonitoring != kIOHIDAccessTypeDenied
         controllerName = engine.connectedControllerName
