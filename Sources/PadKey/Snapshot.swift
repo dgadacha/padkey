@@ -17,16 +17,6 @@ enum Snapshot {
         if let profile, state.profiles.contains(where: { $0.name == profile }) {
             state.select(profileNamed: profile)
         }
-        if demo {
-            var fake = PadSnapshot()
-            fake.pressed = [.cross, .l2, .leftStickUp, .leftStickRight]
-            fake.leftStick = CGPoint(x: 0.62, y: 0.78)
-            fake.rightStick = CGPoint(x: -0.45, y: -0.30)
-            fake.leftTrigger = 0.85
-            fake.rightTrigger = 0.12
-            state.liveSnapshot = fake
-            state.statusItemHidden = true
-        }
 
         let hosting = NSHostingController(rootView: SettingsView(state: state, initialMode: list ? .list : .board, initialZone: demo ? "leftStick" : nil))
         let window = NSWindow(contentViewController: hosting)
@@ -38,6 +28,26 @@ enum Snapshot {
         window.orderFront(nil)
 
         RunLoop.current.run(until: Date().addingTimeInterval(2.0))
+
+        // Etat nominal pose juste avant la capture : le rafraichissement
+        // periodique de l'etat l'ecraserait s'il etait pose plus tot.
+        if demo {
+            var fake = PadSnapshot()
+            fake.pressed = [.cross, .l2, .leftStickUp, .leftStickRight]
+            fake.leftStick = CGPoint(x: 0.62, y: 0.78)
+            fake.rightStick = CGPoint(x: -0.45, y: -0.30)
+            fake.leftTrigger = 0.85
+            fake.rightTrigger = 0.12
+            state.liveSnapshot = fake
+            state.controllerName = "DualSense Wireless Controller"
+            state.availableControllers = [
+                ControllerInfo(id: "DualSense Wireless Controller#0",
+                               name: "DualSense Wireless Controller",
+                               kind: "DualSense", isActive: true, isUsable: true)
+            ]
+            state.isEnabled = true
+            RunLoop.current.run(until: Date().addingTimeInterval(0.4))
+        }
 
         guard let view = window.contentView,
               let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else {
